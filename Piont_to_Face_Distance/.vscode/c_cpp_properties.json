@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Good-Luck",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:/QinJunyou/C/Math/Piont_to_Face_Distance/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.17763.0",
+            "compilerPath": "D:/mingw64/bin/g++.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64",
+            "configurationProvider": "vector-of-bool.cmake-tools"
+        }
+    ],
+    "version": 4
+}

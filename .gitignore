@@ -1,0 +1,59 @@
+4Piont_Compute_Sphere/bin/
+4Piont_Compute_Sphere/build/
+4Piont_Compute_Sphere/pcd/
+
+Binary_2_ASCII/*.pcd
+Binary_2_ASCII/*.exe
+Binary_2_ASCII/*.txt
+
+Computing_Method/bin/
+
+Piont_to_Face_Distance/bin/*.exe
+Piont_to_Face_Distance/build/
+
+Plane_Included_Angle/*.exe
+
+RANSAC_Plane/bin/
+
+RANSAC_Sphere/bin/
+RANSAC_Sphere/build/
+RANSAC_Sphere/pcd/
+
+Tmp/
+
+World_Coordinate_System/bin/
+World_Coordinate_System/pcd/
+
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
