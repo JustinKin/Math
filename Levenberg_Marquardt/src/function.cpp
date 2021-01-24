@@ -69,7 +69,7 @@ void LM_Sover::Calculation()
     }
 
     Jacobi(X);
-    cout << "\nJacobi_1: \n"<<jacobi<<endl;
+    // cout << "\nJacobi_1: \n"<<jacobi<<endl;
     Eigen::MatrixXd A;
     A.resize(dimension,dimension);
     A = jacobi.transpose() * jacobi;
@@ -166,18 +166,12 @@ void LM_Sover::Jacobi(Eigen::MatrixXd X_)
             jacobi(row,col) = (fx[col+1])((observed_values[row]).first,tmp);
         }
     }
-    // cout << "\nJacobi_3: \n"<<jacobi<<endl;
+    cout << "\nJacobi_3: \n"<<jacobi<<endl;
 }
 
 
 void LM_Sover::Generate_gx(Eigen::MatrixXd X_)
 {
-    /*
-    for(int row = 0; row <gx.rows(); ++row)
-    {
-        gx(row,0) = (observed_values[row]).second - (fx[0])((observed_values[row]).first,results);
-    } */
-
     int dim = jacobi.cols();
     // fmt::print("\nLM_Sover::Generate_gx 1\n");
     vector<double> tmp(dim);
