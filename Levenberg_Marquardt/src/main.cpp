@@ -38,13 +38,30 @@
 #include "D:\FMT\include\fmt\format.h"
 #include "D:\FMT\include\fmt\ranges.h"
 #include "D:\FMT\include\fmt\os.h"
+#include "LM.H"
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
+    auto ov = Test();
+	for(const auto &c : ov)
+	{
+		fmt::print("{: f}, {: f}\n", c.first, c.second);
+	}
+    vector<float> iv{0,0,0};
 
-    fmt::print("{}\n", "Hello World!");
+    auto fx0 = [](const float x,const vector<float> v) -> float{return exp(v[0] * x*x + v[1] * x + v[2]);};
+    auto fx1 = [](const float x,const vector<float> v) -> float{return 2*x * exp(v[0] * x*x + v[1] * x + v[2]);};
+    auto fx2 = [](const float x,const vector<float> v) -> float{return x * exp(v[0] * x*x + v[1] * x + v[2]);};
+    auto fx3 = [](const float x,const vector<float> v) -> float{return exp(v[0] * x*x + v[1] * x + v[2]);};
+
+    using funPtr = float (*)(float,vector<float>);
+    vector<funPtr> gy{fx0,fx1,fx2,fx3};
+    LM_Sover lm(ov,iv,100,1,1e-6,1e-6,gy);
+
+    lm.Calculation();
+    fmt::print("{: f}, {: f}\n", lm.GetResults());
 
     system("pause");
     return 0;
