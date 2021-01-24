@@ -49,19 +49,19 @@ int main(int argc, char **argv)
 	{
 		fmt::print("{: f}, {: f}\n", c.first, c.second);
 	}
-    vector<float> iv{0,0,0};
+    vector<double> iv{0,0,0};
 
-    auto fx0 = [](const float x,const vector<float> v) -> float{return exp(v[0] * x*x + v[1] * x + v[2]);};
-    auto fx1 = [](const float x,const vector<float> v) -> float{return 2*x * exp(v[0] * x*x + v[1] * x + v[2]);};
-    auto fx2 = [](const float x,const vector<float> v) -> float{return x * exp(v[0] * x*x + v[1] * x + v[2]);};
-    auto fx3 = [](const float x,const vector<float> v) -> float{return exp(v[0] * x*x + v[1] * x + v[2]);};
+    auto fx0 = [](const double x,const vector<double> v) -> double{return exp(v[0] * x*x + v[1] * x + v[2]);};
+    auto fx1 = [](const double x,const vector<double> v) -> double{return 2*x * exp(v[0] * x*x + v[1] * x + v[2]);};
+    auto fx2 = [](const double x,const vector<double> v) -> double{return x * exp(v[0] * x*x + v[1] * x + v[2]);};
+    auto fx3 = [](const double x,const vector<double> v) -> double{return exp(v[0] * x*x + v[1] * x + v[2]);};
 
-    using funPtr = float (*)(float,vector<float>);
+    using funPtr = double (*)(double,vector<double>);
     vector<funPtr> gy{fx0,fx1,fx2,fx3};
-    LM_Sover lm(ov,iv,100,1,1e-6,1e-6,gy);
+    LM_Sover lm(ov,iv,1000,1e-6,1e-9,1e-9,gy);
 
     lm.Calculation();
-    fmt::print("{: f}, {: f}\n", lm.GetResults());
+    fmt::print("\n======results======\n{}\n", lm.GetResults());
 
     system("pause");
     return 0;

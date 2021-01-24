@@ -25,14 +25,14 @@
 using namespace std;
 
 
-vector<pair<float, float>> Test()
+vector<pair<double, double>> Test()
 {
 	float y = 0;
 	float x = 0;
 	float a = 3.1415927;
 	float b = 2.7182818;
 	float c = 0.618034;
-	vector<pair<float, float>> values;
+	vector<pair<double, double>> values;
 
 	static default_random_engine e(1314);
 	static uniform_real_distribution<float> u(-2,2);
@@ -45,7 +45,7 @@ vector<pair<float, float>> Test()
     return values;
 }
 
-LM_Sover::LM_Sover(vector<pair<float, float>> ov_, vector<float> iv_, unsigned max_,
+LM_Sover::LM_Sover(vector<pair<double, double>> ov_, vector<double> iv_, unsigned max_,
                     float tao_, double ac1, double ac2, vector<fxs> fx_) :
                    observed_values(ov_),initial_values(iv_),max_iter(max_),v(2),miu(0),
                    tao(tao_), accuracy_1(ac1),accuracy_2(ac2),results(iv_),fx(fx_)
@@ -54,6 +54,7 @@ LM_Sover::LM_Sover(vector<pair<float, float>> ov_, vector<float> iv_, unsigned m
     unsigned cols = iv_.size();
     jacobi.resize(rows,cols);
     gx.resize(rows,1);
+    // fmt::print("\nLM_Sover::LM_Sover\n");
 }
 
 
@@ -68,6 +69,7 @@ void LM_Sover::Calculation()
     }
 
     Jacobi(X);
+    cout << "\nJacobi_1: \n"<<jacobi<<endl;
     Eigen::MatrixXd A;
     A.resize(dimension,dimension);
     A = jacobi.transpose() * jacobi;
@@ -79,7 +81,6 @@ void LM_Sover::Calculation()
     bool found = false;
     // auto norm_g = Norm(g);
     auto norm_g = g.rowwise().lpNorm<1>().maxCoeff();
-    // norm_g <= accuracy_1 ? found = true : found = false;
     found = (norm_g <= accuracy_1 ? true : false);
 
     double max_aii = A(0,0);
@@ -88,7 +89,7 @@ void LM_Sover::Calculation()
         if(max_aii < A(i,i))
             max_aii = A(i,i);
     }
-    miu *= tao;
+    miu = tao * max_aii;
 
     unsigned iter = 0;
     auto h = g;
@@ -97,10 +98,13 @@ void LM_Sover::Calculation()
     {
         ++iter;
         h = (A + miu*I).lu().solve(-g);
-        // auto norm_h = Norm(h);
+        cout<<"\nh = \n"<<h<<endl;
+        cout<<"\nA = \n"<<A<<endl;
+        cout<<"\nmiu = "<<miu<<endl;
+        // cout<<"I = \n"<<I<<endl;
+        cout<<"\ng = \n"<<g<<endl;
         auto norm_h = h.rowwise().lpNorm<1>().maxCoeff();
         auto norm_X  = X.rowwise().lpNorm<1>().maxCoeff();
-        // found = (norm_h <= accuracy_2*(norm_X + accuracy_2) ? true : false);
         if(norm_h <= accuracy_2*(norm_X + accuracy_2))
             found = true;
         else
@@ -108,14 +112,22 @@ void LM_Sover::Calculation()
             auto X_new = X + h;
             auto gx_old = gx;
             auto FX_old = 0.5 * gx_old.squaredNorm();
+            cout<<"\nX_new = \n"<<X_new<<endl;
+            cout<<"\ngx_old = \n"<<gx_old<<endl;
+            cout<<"\nFX_old = \n"<<FX_old<<endl;
+
             Generate_gx(X_new);
             auto FX_new = 0.5 * gx.squaredNorm();
             auto L0_Lh = 0.5 * h.transpose() * ( miu * h - g);
             auto roh = (FX_old - FX_new) / L0_Lh(0,0);
+            cout<<"\nFX_new = \n"<<FX_new<<endl;
+            cout<<"\nL0_Lh = \n"<<L0_Lh<<endl;
+            cout<<"\nroh = \n"<<roh<<endl;
             if(roh > 0)
             {
                 X = X_new;
                 Jacobi(X);
+                // cout << "\nJacobi_2: \n"<<jacobi<<endl;
                 A = jacobi.transpose() * jacobi;
                 g = jacobi.transpose() * gx;
                 norm_g = g.rowwise().lpNorm<1>().maxCoeff();
@@ -127,13 +139,14 @@ void LM_Sover::Calculation()
             {
                 miu *= v;
                 v *= 2;
-                gx = gx_old;
+                // gx = gx_old;
             }
         }
 
     }
     for(int i= 0; i<dimension; ++i)
         results[i] = X(i,0);
+    cout<<"\n==iterations==\n"<<iter<<endl;
 
 
 }
@@ -141,9 +154,10 @@ void LM_Sover::Calculation()
 
 void LM_Sover::Jacobi(Eigen::MatrixXd X_)
 {
-    int rows = jacobi.cols();
-    vector<float> tmp(rows);
-    for(int row =0; row<rows; ++row)
+    int dim = jacobi.cols();
+    // fmt::print("\nLM_Sover::Jacobi\n");
+    vector<double> tmp(dim);
+    for(int row =0; row<dim; ++row)
         tmp[row] = X_(row,0);
     for(int row = 0; row <jacobi.rows(); ++row)
     {
@@ -152,6 +166,7 @@ void LM_Sover::Jacobi(Eigen::MatrixXd X_)
             jacobi(row,col) = (fx[col+1])((observed_values[row]).first,tmp);
         }
     }
+    // cout << "\nJacobi_3: \n"<<jacobi<<endl;
 }
 
 
@@ -162,29 +177,19 @@ void LM_Sover::Generate_gx(Eigen::MatrixXd X_)
     {
         gx(row,0) = (observed_values[row]).second - (fx[0])((observed_values[row]).first,results);
     } */
-    int rows = jacobi.cols();
-    vector<float> tmp(rows);
-    for(int row =0; row<rows; ++row)
+
+    int dim = jacobi.cols();
+    // fmt::print("\nLM_Sover::Generate_gx 1\n");
+    vector<double> tmp(dim);
+    for(int row =0; row<dim; ++row)
         tmp[row] = X_(row,0);
-    for(int row = 0; row <rows; ++row)
+    fmt::print("\nLM_Sover::Generate_gx tmp\n{}\n", tmp);
+    for(int row = 0; row <gx.rows(); ++row)
     {
         gx(row,0) = (observed_values[row]).second - (fx[0])((observed_values[row]).first,tmp);
     }
-
+    cout << "\ngx: \n"<<gx<<endl;
 }
-
-
-/* double LM_Sover::Norm(Eigen::MatrixXd vec)
-{
-    int rows = vec.rows();
-    double max = fabs(vec(0,0));
-    for(int row = 1; row < rows; ++row)
-    {
-        if(fabs(vec(row,0)) > max)
-            max = fabs(vec(row,0));
-    }
-    return max;
-} */
 
 
 
