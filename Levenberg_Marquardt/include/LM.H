@@ -15,7 +15,6 @@ public:
              float tao_, double ac1, double ac2, std::vector<fxs> fx_);
     void Jacobi(Eigen::MatrixXd);
     void Generate_gx(Eigen::MatrixXd);
-    // double Norm(Eigen::MatrixXd);
     void Calculation();
     std::vector<double> GetResults() { return results; }
     ~LM_Sover();
