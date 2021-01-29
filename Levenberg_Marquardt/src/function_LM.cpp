@@ -25,33 +25,35 @@
 using namespace std;
 
 
-vector<pair<double, double>> Test()
+vector<pair<vector<double>, double>> Test()
 {
-	float y = 0;
-	float x = 0;
+	double y = 0;
+	double x = 0;
 	// float a = 0.1;
 	// float b = 0.5;
 	// float c = 2;
-	float a = 3.1415927;
-	float b = 2.7182818;
-	float c = 0.618034;
-	vector<pair<double, double>> values;
+	double a = 3.1415927;
+	double b = 2.7182818;
+	double c = 0.618034;
+	vector<pair<vector<double>, double>> values;
 
 	static default_random_engine e(1314);
-	static uniform_real_distribution<float> u(-2,2);
+	static uniform_real_distribution<double> u(-2,2);
 	for(int i = 0; i < 9; i++)
 	{
 		x = u(e);
+        vector<double> tmp;
+        tmp.push_back(x);
 		y = exp(a * x * x + b * x + c);
-		values.emplace_back(make_pair(x,y));
+		values.emplace_back(make_pair(tmp,y));
 	}
     return values;
 }
 
-LM_Sover::LM_Sover(vector<pair<double, double>> ov_, vector<double> iv_, unsigned max_,
-                    float tao_, double ac1, double ac2, vector<fxs> fx_) :
+LM_Sover::LM_Sover(vector<pair<vector<double>, double>> ov_, vector<double> iv_, unsigned max_,
+                    float tao_, double ac1, double ac2, vector<fxs> fx_, vector<fxs> jx_) :
                    observed_values(ov_),initial_values(iv_),max_iter(max_),v(2),miu(0),
-                   tao(tao_), accuracy_1(ac1),accuracy_2(ac2),results(iv_),fx(fx_)
+                   tao(tao_), accuracy_1(ac1),accuracy_2(ac2),results(iv_),fx(fx_), jx(jx_)
 {
     unsigned rows = ov_.size();
     unsigned cols = iv_.size();
@@ -160,11 +162,13 @@ void LM_Sover::Jacobi(Eigen::MatrixXd X_)
     vector<double> tmp(dim);
     for(int row =0; row<dim; ++row)
         tmp[row] = X_(row,0);
+    int j = dim * jacobi.rows();
+    int count = 0;
     for(int row = 0; row <jacobi.rows(); ++row)
     {
         for(int col = 0; col <jacobi.cols(); ++col)
         {
-            jacobi(row,col) = (fx[col+1])((observed_values[row]).first,tmp);
+            jacobi(row,col) = (jx[count++])((observed_values[row]).first,tmp);//todo
         }
     }
     // cout << "\nJacobi_3: \n"<<jacobi<<endl;
@@ -181,7 +185,7 @@ void LM_Sover::Generate_gx(Eigen::MatrixXd X_)
     // fmt::print("\nLM_Sover::Generate_gx tmp\n{}\n", tmp);
     for(int row = 0; row <gx.rows(); ++row)
     {
-        gx(row,0) = (observed_values[row]).second - (fx[0])((observed_values[row]).first,tmp);
+        gx(row,0) = (observed_values[row]).second - (fx[row])((observed_values[row]).first,tmp);//todo,done
     }
     // cout << "\ngx: \n"<<gx<<endl;
 }
