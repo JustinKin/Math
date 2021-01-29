@@ -21,17 +21,9 @@
           一心向善	好运相伴	佛祖保佑	永无BUG
 */
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
 #include <vector>
-#include <list>
-#include <forward_list>
 #include <algorithm>
 #include <functional>
-#include <iterator>
-#include <map>
-#include <set>
 #include <utility>
 #include <memory>
 #include <cmath>
@@ -44,6 +36,8 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+    std::ios::sync_with_stdio(false);
+
     auto ov = Test();
     // vector<std::pair<double, double>> ov{{1,5},{-1,1}};
 	for(const auto &c : ov)

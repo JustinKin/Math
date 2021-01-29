@@ -4,8 +4,7 @@
 #include <iostream>
 #include "D:\QinJunyou\C\Eigen3\Eigen\Eigen"
 
-
-using funcPtr_generate_jacobi = double (*)(std::vector<double>,std::vector<double>);//观测向量(值)和待求量
+using funcPtr_generate_jacobi = double (*)(std::vector<double>, std::vector<double>); //观测向量(值)和待求量
 using fxs = funcPtr_generate_jacobi;
 class LM_Sover
 {
@@ -19,7 +18,6 @@ public:
     std::vector<double> GetResults() { return results; }
     ~LM_Sover();
 
-
 private:
     std::vector<std::pair<std::vector<double>, double>> observed_values;
     std::vector<double> initial_values;
@@ -30,14 +28,12 @@ private:
     double accuracy_1;
     double accuracy_2;
     Eigen::MatrixXd jacobi;
-    Eigen::MatrixXd gx;     //观测-迭代
+    Eigen::MatrixXd gx; //观测-迭代
     std::vector<double> results;
-    std::vector<fxs> fx;    //存放原方程组
-    std::vector<fxs> jx;    //存放雅可比生成函数
+    std::vector<fxs> fx; //存放原方程组
+    std::vector<fxs> jx; //存放雅可比生成函数
 };
 
 std::vector<std::pair<std::vector<double>, double>> Test();
-
-
 
 #endif
