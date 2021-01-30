@@ -114,7 +114,7 @@ void LM_Sover::Calculation()
     }
     for (int i = 0; i < dimension; ++i)
         results[i] = X(i, 0);
-    cout << "\n===iterations===\n"
+    cout << "\niterations :\n"
          << iter << endl;
 }
 
