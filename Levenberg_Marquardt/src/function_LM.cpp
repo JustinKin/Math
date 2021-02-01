@@ -116,7 +116,7 @@ void LM_Sover::Calculation()
         results[i] = X(i, 0);
     cout << "\niterations :\n"
          << iter << endl;
-    cout<<"\n=== Residual Error===\n"
+    cout<<"\n===Residual Error===\n"
         <<gx.norm()<< endl;
 }
 
