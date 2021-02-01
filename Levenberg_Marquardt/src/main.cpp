@@ -88,7 +88,7 @@ int main(int argc, char **argv)
       *    Test()函数生成9组观测值,对迭代初值敏感,有可能不收敛;        *
       *========================================================*/
 
-    vector<double> iv2{0,0,0};
+    vector<double> iv2{2,1,1};
 
     auto ov2 = Test();
     fmt::print("\n====Observed values====\n");
@@ -119,6 +119,7 @@ int main(int argc, char **argv)
 
     lm2.Calculation();
     fmt::print("\n===Results===\n{}\n", lm2.GetResults());
+
 
     system("pause");
     return 0;
