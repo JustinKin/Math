@@ -36,11 +36,20 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-
-    // fmt::print("\n===Results===\n{}\n", lm2.GetResults());
-
-    fmt::print("\n===Results===\n\n");
-    Exercise_271();
+    Exercise_271 test(2,-1,1,-1,1,1,0,4);
+    // vector<Point> v(10);
+    // for(int i = 0; i < 10; i++)
+    // {
+    //     v[i].x = -2 + 0.5 * i;
+    //     v[i].y = 2 - 0.5 * i;
+    // }
+    // int i = 0;
+    // for(const auto &c :v)
+    // {
+    //     fmt::print("\n Point{} is inside : {} \n", ++i, test.IsInside(c));
+    // }
+    // fmt::print("\n===Results===\n\n");
+    // Exercise_271();
     system("pause");
     return 0;
 }

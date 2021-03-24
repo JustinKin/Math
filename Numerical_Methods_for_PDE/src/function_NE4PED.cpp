@@ -7,6 +7,10 @@
 #include <random>
 #include "D:\QinJunyou\C\Eigen3\Eigen\Eigen"
 #include "D:\QinJunyou\C\Eigen3\Eigen\LU"
+#include "D:\FMT\include\fmt\format.h"
+#include "D:\FMT\include\fmt\ranges.h"
+#include "D:\FMT\include\fmt\os.h"
+
 #include "NE4PED.H"
 
 using namespace std;
@@ -18,15 +22,15 @@ using namespace std;
 ==  其中, 未知节点15个, 已知节点10个                             ==
 ============================================================ */
 // 计算a, b, c
-vector<int> Get_abc(Triangle &t)
+/* vector<int> Get_abc(Triangle &t)
 {
     int a = t.j.x * t.k.y - t.k.x * t.j.y;
     int b = t.j.y - t.k.y;
     int c = t.k.x - t.j.x;
     return {a,b,c};
 }
-
-void Exercise_271()
+ */
+/* void Exercise_271()
 {
     const float f = 2.0;
     const float s = 1.0 / 8.0; //每个三角形面积
@@ -81,4 +85,37 @@ void Exercise_271()
     Eigen::Matrix<float, 15, 1> u = A.lu().solve(b);
     cout << " 原方程的数值解为:\n " << u << endl;
 }
+ */
 
+Exercise_271::
+    Exercise_271(double f_, double x1_, double x2_, double y1_, double y2_,
+                 double u_dx1, double u_dx2, unsigned xParts_)
+        : f(f_), boundary_x(make_pair(x1_,x2_)), boundary_y(make_pair(y1_,y2_)), u_dx(make_pair(u_dx1,u_dx2)), xParts(xParts_)
+    {
+        double len = (boundary_x.second - boundary_x.first) / xParts;
+        auto yParts = (boundary_y.second - boundary_y.first) / len;
+        nodes = (xParts + 1) * (yParts + 1);
+        triArea = 0.5 * len * len;
+        fmt::print("=== Initialized ===\n\n");
+        fmt::print(" xParts : {}\n", xParts);
+        fmt::print(" yParts : {}\n", yParts);
+        fmt::print("  nodes : {}\n", nodes);
+        fmt::print("triArea : {}\n", triArea);
+    }
+
+
+bool Exercise_271::IsInside(Point const &p_)
+{
+    return( p_.x >= boundary_x.first && p_.x <= boundary_x.second
+         && p_.y >= boundary_y.first && p_.y <= boundary_y.second );
+}
+
+
+std::vector<double> Exercise_271::
+    Get_abc(Point const &i, Point const &j, Point const &k)
+    {
+        double a = j.x * k.y - k.x * j.y;
+        double b = j.y - k.y;
+        double c = k.x - j.x;
+        return {a,b,c};
+    }
