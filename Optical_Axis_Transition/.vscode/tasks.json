@@ -1,0 +1,65 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "GoodLuck-G++",
+            "command": "C:/mingw64/bin/g++.exe",
+            "args": [//编译时候的参数
+                //"-mfma",//需要haswell
+                //"-msse4",//4代u,4
+                //"-mavx2",//4代u,2
+                "-march=native",//启用您的cpu支持的所有选项，开太多负优化？
+                "-O2",//推荐用2
+                "-fopenmp",//开启多线程，需要测试看看是不是负优化了
+                "-g",//生成调试信息。GNU 调试器可利用该信息。
+
+
+                "${workspaceFolder}/src/*.cpp",
+                "-o",//指定生成可执行文件的名称
+                "${workspaceFolder}/bin/${fileBasenameNoExtension}.exe",
+                //"-L","D:\\Windows Kits\\10\\Lib\\10.0.18362.0\\um\\x64",
+                //"-L","D:\\mingw64\\x86_64-w64-mingw32\\lib",
+                "-I","D:/QinJunyou/C/Math/Optical_Axis_Transition/include",
+                "-I","D:/FMT/include",
+                "-I","D:/QinJunyou/C/Eigen3/Eigen",
+                "-L","D:/FMT/lib",
+
+                "-l","fmt",
+                // "-Wl,--no-as-needed",//不忽略XXX库
+
+
+                //-lpthread -lm -ldl分别是多线程库，数学库，显式加载动态库的动态函数库
+                // "-l","opencv_core430",
+                // "-l","opencv_imgcodecs430",
+                // "-l","opencv_imgproc430",
+                // "-l","opencv_video430",
+                // "-l","opencv_ml430",
+                // "-l","opencv_highgui430",
+                // "-l","opencv_objdetect430",
+                // "-l","opencv_flann430",
+                // "-l","opencv_photo430",
+                // "-l","opencv_videoio430",
+                // "-l","pthread",
+                // "-l","m",
+                // //"-l","dl",
+                // "-l","gdi32",
+
+                //"-Wl,-rpath=/home/justinkin/OpenCV/myinstall/lib",
+                "-m64"//biuld for X64
+
+
+            ],
+            "options": {
+                "cwd": "C:/mingw64/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
