@@ -30,8 +30,8 @@ int main(int argc, char **argv)
 
     // 输入角度单位: 弧度
     // string unit = "rad";
-    // double includedAngle = 3.14/1.5;
-    // double roll = 3.14 / 6.0;
+    // double includedAngle = 2.618;
+    // double roll = 3.141592654;
 
     // 输入角度单位: 角度
     string unit = "deg";
@@ -39,12 +39,13 @@ int main(int argc, char **argv)
     double roll = 180;
 
     // 初始相机1的方向矢量
-    Eigen::Matrix<double, 3,1> cam1;
+    Eigen::Matrix<double, 3, 1> cam1;
     cam1 << 1, 0, 0;
 
-    Optical_Axis_Transition test(unit,includedAngle,cam1);
+    Optical_Axis_Transition test(unit, includedAngle, cam1);
     test.SolveCam2Vector(roll);
-    cout <<"\n===Results===\n"<<test.GetCam2Vector()<<"\n\n";
+    cout << "\n===Results===\n"
+         << test.GetCam2Vector() << "\n\n";
 
     system("pause");
     return 0;
