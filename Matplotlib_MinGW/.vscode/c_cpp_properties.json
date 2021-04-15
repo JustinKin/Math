@@ -4,9 +4,12 @@
             "name": "Good-Luck",
             "includePath": [
                 "${workspaceFolder}/**",
-                "D:/Lib/Eigen3/Eigen",
-                "D:/QinJunyou/C/Math/Numerical_Methods_for_PDE/include",
-                "D:/Lib/FMT/include"
+                // "D:/QinJunyou/C/Eigen3/Eigen",
+                "D:/QinJunyou/C/Math/Matplotlib_MinGW/include",
+                "D:/FMT/include",
+                "C:/msys64/mingw64/include/python3.8",
+                "C:/msys64/mingw64/lib/python3.8/site-packages/numpy/core/include",
+                "D:/matplotlib/include"
 
             ],
             "defines": [

@@ -21,35 +21,34 @@
           一心向善	好运相伴	佛祖保佑	永无BUG
 */
 #include <iostream>
-#include <vector>
-#include <algorithm>
-#include <functional>
-#include <utility>
-#include <memory>
 #include <cmath>
-#include "D:\Lib\FMT\include\fmt\format.h"
-#include "D:\Lib\FMT\include\fmt\ranges.h"
-#include "D:\Lib\FMT\include\fmt\os.h"
-#include "NE4PED.H"
+#include "matplotlibcpp.h"
+
+#include "Matplotlib_test.H"
 
 using namespace std;
+namespace plt = matplotlibcpp;
 
-int main(int argc, char **argv)
+int main()
 {
-    Exercise_271 test(2,-1,1,-1,1,1,0,4);
-    // vector<Point> v(10);
-    // for(int i = 0; i < 10; i++)
-    // {
-    //     v[i].x = -2 + 0.5 * i;
-    //     v[i].y = 2 - 0.5 * i;
-    // }
-    // int i = 0;
-    // for(const auto &c :v)
-    // {
-    //     fmt::print("\n Point{} is inside : {} \n", ++i, test.IsInside(c));
-    // }
-    // fmt::print("\n===Results===\n\n");
-    // Exercise_271();
-    system("pause");
-    return 0;
+    // Prepare data.
+    int n = 5000; // number of data points
+    vector<double> x(n),y(n);
+    for(int i=0; i<n; ++i) {
+        double t = 2*M_PI*i/n;
+        x.at(i) = 16*sin(t)*sin(t)*sin(t);
+        y.at(i) = 13*cos(t) - 5*cos(2*t) - 2*cos(3*t) - cos(4*t);
+    }
+
+    // plot() takes an arbitrary number of (x,y,format)-triples.
+    // x must be iterable (that is, anything providing begin(x) and end(x)),
+    // y must either be callable (providing operator() const) or iterable.
+    plt::plot(x, y, "r-", x, [](double d) { return 12.5+abs(sin(d)); }, "k-");
+
+
+    // show plots
+    plt::pause(2);
+    plt::show();
 }
+
+

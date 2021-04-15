@@ -5,11 +5,11 @@
 #include <utility>
 #include <cmath>
 #include <random>
-#include "D:\QinJunyou\C\Eigen3\Eigen\Eigen"
-#include "D:\QinJunyou\C\Eigen3\Eigen\LU"
-#include "D:\FMT\include\fmt\format.h"
-#include "D:\FMT\include\fmt\ranges.h"
-#include "D:\FMT\include\fmt\os.h"
+#include "D:\Lib\Eigen3\Eigen\Eigen"
+#include "D:\Lib\Eigen3\Eigen\LU"
+#include "D:\Lib\FMT\include\fmt\format.h"
+#include "D:\Lib\FMT\include\fmt\ranges.h"
+#include "D:\Lib\FMT\include\fmt\os.h"
 
 #include "NE4PED.H"
 
