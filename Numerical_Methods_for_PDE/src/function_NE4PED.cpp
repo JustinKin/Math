@@ -30,77 +30,59 @@ using namespace std;
     return {a,b,c};
 }
  */
-/* void Exercise_271()
-{
-    const float f = 2.0;
-    const float s = 1.0 / 8.0; //每个三角形面积
-    const float beta = 1.0;
-    Eigen::Matrix<float, 15, 15> A;
-    Eigen::Matrix<float, 15, 1> b;
-
-    // 初始化点的坐标
-    vector<Point> v(15);
-    int num = 0;
-    for(int j = 0; j <5; ++j)
-    {
-        for(int i = 0; i <5; ++i)
-        {
-            v[num++].x = -1 + 0.5 * j;
-            v[num++].y = 1 - 0.5 * i;
-        }
-    }
-    vector<int> inner{1,2,3,6,7,8,11,12,13,16,17,18,21,22,23};  //内点编号
-    vector<int> outer{0,4,5,9,10,14,15,19,20,24};  //外点编号
-
-    num = 0;
-    const float len = 0.5;
-    for (int j = 0; j < 14; ++j)
-    {
-        auto it = find(outer.begin(), outer.end(), num);
-        float aph = 1;
-        if(it != outer.end())
-            aph = 0;
-        float tmp = 1.0 / 2.0 * s * 1.0 / 3.0 * f * aph;
-        b(j, 0) = 1.0 / 2.0 * s * 1.0 / 3.0 * f - tmp + len;
-        ++num;
-    }
-
-    num = 0;
-    int l = 1, m = 2 , n = 6;
-    for (int i = 0; i < 14; ++i)
-    {
-        for (int j = 0; j < 14; ++j)
-        {
-
-            Triangle t(v[l], v[m], v[n]);
-            auto v = Get_abc(t);
-            A(i, j) = 1.0 / 4 * 1 / s * (v[2] + v[3]);
-            ++l;
-            ++m;
-            ++n;
-        }
-    }
-
-    // 使用LU分解进行线性方程组求解
-    Eigen::Matrix<float, 15, 1> u = A.lu().solve(b);
-    cout << " 原方程的数值解为:\n " << u << endl;
-}
- */
 
 Exercise_271::
     Exercise_271(double f_, double x1_, double x2_, double y1_, double y2_,
                  double u_dx1, double u_dx2, unsigned xParts_)
-        : f(f_), boundary_x(make_pair(x1_,x2_)), boundary_y(make_pair(y1_,y2_)), u_dx(make_pair(u_dx1,u_dx2)), xParts(xParts_)
+        : f(f_), boundary_x(make_pair(x1_,x2_)), boundary_y(make_pair(y1_,y2_)), u_dx(make_pair(u_dx1,u_dx2)),xParts(xParts_)
     {
+        // 网格剖分的参数
         double len = (boundary_x.second - boundary_x.first) / xParts;
         auto yParts = (boundary_y.second - boundary_y.first) / len;
         nodes = (xParts + 1) * (yParts + 1);
         triArea = 0.5 * len * len;
+        // 初始化内外点编号
+        unsigned outs = 2*(xParts + 1);
+        unsigned ins = (xParts + 1)*(xParts + 1 ) - outs;
+        outerNodes.resize(outs);
+        innerNodes.resize(ins);
+        for(unsigned i = 0; i < xParts + 1; ++i)
+        {
+            unsigned no = i * (xParts + 1);
+            outerNodes[i*2] = no;
+            outerNodes[i*2 + 1] = no + xParts;
+        }
+        for(unsigned j = 0, k = 0; j < xParts + 1; ++j)
+        {
+            for(unsigned i = 1; i < xParts; ++i)
+                innerNodes[k++] = i + j * (xParts + 1);
+        }
+        // 初始化内外点坐标
+        nodesData.resize(nodes);
+        for(unsigned j =0, k = 0; j < xParts + 1; ++j)
+        {
+            for(unsigned i = 0; i < xParts + 1; ++i)
+            {
+                nodesData[k].x = boundary_x.first + len * j;
+                nodesData[k++].y = boundary_y.second - len * i;
+            }
+        }
+        // 外点初值
+        for(auto const &p : outerNodes)
+            nodesData[p].value = 0;
+
         fmt::print("=== Initialized ===\n\n");
-        fmt::print(" xParts : {}\n", xParts);
-        fmt::print(" yParts : {}\n", yParts);
-        fmt::print("  nodes : {}\n", nodes);
-        fmt::print("triArea : {}\n", triArea);
+        fmt::print("    xParts : {}\n", xParts);
+        fmt::print("    yParts : {}\n", yParts);
+        fmt::print("     nodes : {}\n", nodes);
+        fmt::print("outerNodes : {}\n", outs);
+        fmt::print("outerNodes No. : {}\n", outerNodes);
+        fmt::print("innerNodes : {}\n", ins);
+        fmt::print("innerNodes No. : {}\n", innerNodes);
+        int count = 0;
+        // for(auto const &c : nodesData)
+        //     fmt::print("{}: ({}, {}, {})\n", count++, c.x, c.y, c.value);
+        fmt::print("   triArea : {}\n", triArea);
     }
 
 

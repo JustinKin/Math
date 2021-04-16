@@ -10,12 +10,14 @@
 class Point
 {
 public:
-    float x;
-    Point() : x(0), y(0) {}
-    float y;
-    Point(double x_, double y_) : x(x_), y(y_){}
-    Point(const Point& p) : x(p.x), y(p.y){}
+    double x;
+    double y;
+    double value;
+    Point() : x(3.14), y(3.14), value(3.14) {}
     ~Point(){}
+    Point(double x_, double y_) : x(x_), y(y_), value(3.14) {}
+    Point(double x_, double y_, double value_) : x(x_), y(y_), value(value_) {}
+    Point(const Point& p) : x(p.x), y(p.y), value(p.value) {}
 };
 
 class Triangle
@@ -46,6 +48,9 @@ private:
     const std::pair<double, double> u_dx;
     const unsigned xParts;
     unsigned nodes;
+    std::vector<unsigned> innerNodes;
+    std::vector<unsigned> outerNodes;
+    std::vector<Point> nodesData;
     double triArea;
 };
 
