@@ -19,15 +19,15 @@ public:
     Point(const Point& p) : x(p.x), y(p.y), value(p.value) {}
 };
 
-class Triangle
-{
-public:
-    Point i;
-    Point j;
-    Point k;
-    Triangle(Point i_, Point j_, Point k_) : i(i_), j(j_), k(k_){}
-    ~Triangle(){}
-};
+// class Triangle
+// {
+// public:
+//     Point i;
+//     Point j;
+//     Point k;
+//     Triangle(Point i_, Point j_, Point k_) : i(i_), j(j_), k(k_){}
+//     ~Triangle(){}
+// };
 
 //P82, 2.7.1, 线性元求解泊松方程-混合边界问题
 // void Exercise_271();
@@ -41,7 +41,7 @@ friend class Exercise_271;
 public:
     Grid(double f_, double x1_, double x2_, double y1_, double y2_,unsigned xParts_);
     ~Grid(){}
-    bool IsInside(Point const &p_);
+    // bool IsInside(Point const &p_);
     std::vector<double> Get_abc(Point const &i_, Point const &j_, Point const &k_);
     // 形成有限元方程
     virtual void GeneratePDE() = 0;
@@ -94,15 +94,10 @@ private:
     void ProcessLM();
     // 处理左下left-bottom
     void ProcessLB();
+    // 处理右边界
+    void ProcessR();
     // 处理右上right-top
-    void ProcessRT();
     // 处理右下right-bottom
-    void ProcessRB();
-    // 处理上top
-    void ProcessT();
-    // 处理下bottom
-    void ProcessB();
-
 
 };
 

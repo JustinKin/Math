@@ -31,6 +31,8 @@ int main(int argc, char **argv)
     unsigned parts = 4;
     string filename = "4parts";
     Exercise_271 test1(2, -1, 1, -1, 1, parts, 0, 1, 0);
+    test1.GeneratePDE();
+    test1.SolveEquation();
     test1.GetResults(filename);
 
     // parts = 5;

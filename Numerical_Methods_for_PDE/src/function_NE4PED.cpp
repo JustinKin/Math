@@ -66,11 +66,11 @@ Grid::Grid(double f_, double x1_, double x2_, double y1_, double y2_,unsigned xP
     }
 
 
-bool Grid::IsInside(Point const &p_)
-{
-    return( p_.x >= boundary_x.first && p_.x <= boundary_x.second
-         && p_.y >= boundary_y.first && p_.y <= boundary_y.second );
-}
+// bool Grid::IsInside(Point const &p_)
+// {
+//     return( p_.x >= boundary_x.first && p_.x <= boundary_x.second
+//          && p_.y >= boundary_y.first && p_.y <= boundary_y.second );
+// }
 
 
 std::vector<double> Grid::Get_abc(Point const &i, Point const &j, Point const &k)
@@ -149,6 +149,8 @@ Exercise_271::
         // 显示网格参数
         ShowGridPara();
     }
+
+
 // 处理左上left-top
 void Exercise_271::ProcessLT()
 {
@@ -210,27 +212,50 @@ void Exercise_271::ProcessLB()
     A(row,row) = 0.25 / triArea * (v[1][1] * v[2][1] + v[1][2] * v[2][2]);
 }
 
-// 处理右上right-top
-void Exercise_271::ProcessRT()
+
+void Exercise_271::ProcessR()
 {
+    // 右上
+    const auto  &p = nodesData;
+    vector<vector<double>>v(3);
+    const int edge1 = xParts - 1;
+    int row = innerNodes.size() - xParts + 1;  // 矩阵行下标
+    const int top = nodes - xParts;  //点号 不是内点矩阵下标
+    const int bottom = nodes - 2;  //点号 不是内点矩阵下标
+    // 处理右上right-top
+    v[0] = Get_abc(p[top], p[top - 1], p[top - 1 - xParts]);
+    v[1] = Get_abc(p[top], p[top - 1 - xParts], p[top - xParts]);
+    v[2] = Get_abc(p[top], p[top - xParts], p[top + 1]);
+    // 4个点 4项
+    A(row, row - edge1) = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
+    A(row, row - edge1 + 1) = 0.25 / triArea * (v[2][1] * v[1][1] + v[2][2] * v[1][2]);
+    A(row, row) = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] + v[0][2] * v[1][2] * v[2][2]);
+    A(row, row + 1) = 0.25 / triArea * (v[2][1] + v[2][2]);
+    ++row;
 
-}
+    //处理右中right-middle
+    for(int j = top + 1; j < bottom; ++j) // j 是点号 不是内点矩阵下标
+    {
+        v[0] = Get_abc(p[j], p[j -1], p[j - 1 - xParts]);
+        v[1] = Get_abc(p[j], p[j - 1 - xParts], p[j - xParts]);
+        v[2] = Get_abc(p[j], p[j - xParts], p[j + 1]);
+        // 5个点 5项
+        A(row, row - edge1) = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
+        A(row, row - edge1 + 1) = 0.25 / triArea * (v[2][1] * v[1][1] + v[2][2] * v[1][2]);
+        A(row, row) = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] + v[0][2] * v[1][2] * v[2][2]);
+        A(row, row + 1) = 0.25 / triArea * (v[2][1] + v[2][2]);
+        A(row, row - 1) = 0.25 / triArea * (v[0][1] + v[0][2]);
+        ++row;
+    }
 
-// 处理右下right-bottom
-void Exercise_271::ProcessRB()
-{
-
-}
-
-// 处理上top
-void Exercise_271::ProcessT()
-{
-
-}
-
-// 处理下bottom
-void Exercise_271::ProcessB()
-{
+    // 处理右下right-bottom
+    v[0] = Get_abc(p[bottom], p[bottom -1], p[bottom - 1 - xParts]);
+    v[1] = Get_abc(p[bottom], p[bottom - 1 - xParts], p[bottom - xParts]);
+    v[2] = Get_abc(p[bottom], p[bottom - xParts], p[bottom + 1]);
+    // 3个点 3项
+    A(row, row - edge1) = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
+    A(row, row) = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] + v[0][2] * v[1][2] * v[2][2]);
+    A(row, row - 1) = 0.25 / triArea * (v[0][1] + v[0][2]);
 
 }
 
@@ -258,7 +283,6 @@ void Exercise_271::GeneratePDE()
         b(j,0) += beta2 * 2 * triArea;
     }
     // 右端第二项恒为0
-
 
     // 方程左端
     //处理左上left-top
@@ -326,13 +350,7 @@ void Exercise_271::GeneratePDE()
         ++row;
     }
 
-    // 对于右边界内点
-    // 右上
-    const auto  &p = nodesData;
-    vector<vector<double>>v(3);
-
-    // 右中
-
-    // 右下
+    // 处理右边界
+    void ProcessR();
 
 }
