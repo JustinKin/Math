@@ -154,20 +154,27 @@ Exercise_271::
 // 形成有限元方程
 void Exercise_271::GeneratePDE()
 {
-    int scale = innerNodes.size();
-    int edge1 = xParts-1;
-    int edge2 = scale - edge1;
-    // 右端第一项
+    const int scale = innerNodes.size();
+    const int edge1 = xParts - 1;
+    const int edge2 = scale - edge1;
+    // 方程右端
+    // 右端第一项和第三项
+    const auto &beta1 = u_dx.first; // 1
+    const auto &beta2 = u_dx.second; // 0
     for(int j = 0; j < edge1; ++j)
+    {
         b(j,0) = 1.0 / 3.0 * triArea * f * 3;
+        b(j,0) += beta1 * 2 * triArea;
+    }
     for(int j = edge1; j < edge2; ++j)
         b(j,0) = 1.0 / 3.0 * triArea * f * 6;
     for(int j = edge2; j < scale; ++j)
+    {
         b(j,0) = 1.0 / 3.0 * triArea * f * 3;
-
+        b(j,0) += beta2 * 2 * triArea;
+    }
     // 右端第二项恒为0
 
-    // 右端第三项
 
     // 方程左端
     // 对于左边界内点
@@ -177,22 +184,26 @@ void Exercise_271::GeneratePDE()
         auto const &p = nodesData;
         if(j == 0)
         {
-            vector<double>abc(3);
-            double b[6] = {0}, c[6] = {0};
-
+            vector<vector<double>>v;
+            double sumb = 1.0, sumc = 1.0;
             A(0,0);//3个三角形
 
 
 
             A(0,1);//1个三角形
-            A(0,edge1);//2个三角形
-            abc = Get_abc(p[xParts+2],p[0],p[1]);
-            b[0] = abc[1];
-            c[0] = abc[2];
-            abc = Get_abc(p[xParts+1],p[0],p[xParts+2]);
-            b[1] = abc[1];
-            c[1] = abc[2];
-            A(0,edge1) = 0.25 / triArea * (b[0] * b[1] + c[0] * c[1]);
+
+            A(0,edge1) = 0.25 / triArea;//2个三角形
+            v.clear();
+            sumb = 1.0;
+            sumc = 1.0;
+            v.emplace_back(Get_abc(p[1],p[2],p[xParts+2]));
+            v.emplace_back(Get_abc(p[1],p[xParts+2],p[xParts+1]));
+            for(const auto & bc : v)
+            {
+                sumb *= bc[1];
+                sumc *= bc[2];
+            }
+            A(0,edge1) = 0.25 / triArea * (sumb + sumc );
         }
 
         for(int i = 0; i< count; ++i)
