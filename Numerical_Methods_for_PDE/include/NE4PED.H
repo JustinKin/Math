@@ -88,6 +88,21 @@ private:
     const std::pair<double, double> u_dx;
     void SetNodesNumb() override;
     void SetNodesData() override;
+    // 处理左上left-top
+    void ProcessLT();
+    // 处理左上left-middle
+    void ProcessLM();
+    // 处理左下left-bottom
+    void ProcessLB();
+    // 处理右上right-top
+    void ProcessRT();
+    // 处理右下right-bottom
+    void ProcessRB();
+    // 处理上top
+    void ProcessT();
+    // 处理下bottom
+    void ProcessB();
+
 
 };
 
