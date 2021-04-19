@@ -20,18 +20,17 @@
                 "${workspaceFolder}/bin/${fileBasenameNoExtension}.exe",
                 //"-L","D:\\Windows Kits\\10\\Lib\\10.0.18362.0\\um\\x64",
                 //"-L","D:\\mingw64\\x86_64-w64-mingw32\\lib",
-                "-I","D:/QinJunyou/C/Math/Matplotlib_MinGW/include",
-                "-I","D:/FMT/include",
                 // "-I","D:/QinJunyou/C/Eigen3/Eigen",
-                "-I","C:/msys64/mingw64/include/python3.8",
-                "-I","C:/msys64/mingw64/lib/python3.8/site-packages/numpy/core/include",
-                "-I","D:/matplotlib/include",
+                "-I","D:/Lib/FMT/include",
+                "-I","D:/ProgramFiles/Python39/include",
+                "-I","D:/ProgramFiles/Python39/Lib/site-packages/numpy/core/include",
+                "-I","D:/Lib/Matplotlib",
 
-                "-L","D:/FMT/lib",
-                "-L","C:/msys64/mingw64/lib",
+                "-L","D:/Lib/FMT/lib",
+                "-L","D:/ProgramFiles/Python39/libs",
 
                 "-l","fmt",
-                "-l","python3.8.dll",
+                "-l","python39",
                 // "-Wl,--no-as-needed",//不忽略XXX库
 
 

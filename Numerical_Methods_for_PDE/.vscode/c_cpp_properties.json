@@ -6,7 +6,10 @@
                 "${workspaceFolder}/**",
                 "D:/Lib/Eigen3/Eigen",
                 "D:/QinJunyou/C/Math/Numerical_Methods_for_PDE/include",
-                "D:/Lib/FMT/include"
+                "D:/Lib/FMT/include",
+                "D:/ProgramFiles/Python39/include",
+                "D:/ProgramFiles/Python39/Lib/site-packages/numpy/core/include",
+                "D:/Lib/Matplotlib"
 
             ],
             "defines": [

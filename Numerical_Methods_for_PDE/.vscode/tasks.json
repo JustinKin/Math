@@ -23,9 +23,16 @@
                 "-I","D:/QinJunyou/C/Math/Numerical_Methods_for_PDE/include",
                 "-I","D:/Lib/FMT/include",
                 "-I","D:/Lib/Eigen3/Eigen",
+                "-I","D:/ProgramFiles/Python39/include",
+                "-I","D:/ProgramFiles/Python39/Lib/site-packages/numpy/core/include",
+                "-I","D:/Lib/Matplotlib",
+
                 "-L","D:/Lib/FMT/lib",
+                "-L","D:/ProgramFiles/Python39/libs",
+
 
                 "-l","fmt",
+                "-l","python39",
                 // "-Wl,--no-as-needed",//不忽略XXX库
 
 

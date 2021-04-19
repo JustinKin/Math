@@ -6,10 +6,10 @@
                 "${workspaceFolder}/**",
                 // "D:/QinJunyou/C/Eigen3/Eigen",
                 "D:/QinJunyou/C/Math/Matplotlib_MinGW/include",
-                "D:/FMT/include",
-                "C:/msys64/mingw64/include/python3.8",
-                "C:/msys64/mingw64/lib/python3.8/site-packages/numpy/core/include",
-                "D:/matplotlib/include"
+                "D:/Lib/FMT/include",
+                "D:/ProgramFiles/Python39/include",
+                "D:/ProgramFiles/Python39/Lib/site-packages/numpy/core/include",
+                "D:/Lib/Matplotlib"
 
             ],
             "defines": [
