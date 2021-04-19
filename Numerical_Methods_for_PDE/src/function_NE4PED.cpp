@@ -315,7 +315,6 @@ void Exercise_271::GeneratePDE()
         A(row, row + edge1) = 0.25 / triArea * (v[4][1] * v[3][1] + v[4][2] * v[3][2]);
         ++row;
         const int bottom = (col + 1) * (xParts + 1) - 2; // 点号 不是内点矩阵下标
-        // ++row;
         for (int j = top + 1; j < bottom; ++j) // j 是点号 不是内点矩阵下标
         {
             v[0] = Get_abc(p[j], p[j - 1], p[j - 1 - xParts]);

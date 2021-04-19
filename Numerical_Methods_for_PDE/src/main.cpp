@@ -28,20 +28,13 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    unsigned parts = 4;
-    string filename = "4parts";
-    Exercise_271 test1(2, -1, 1, -1, 1, parts, 0, 1, 0);
-    test1.GeneratePDE();
-    test1.SolveEquation(true);
-    test1.GetResults(filename);
+  unsigned parts = 4;
+  string filename = "4parts";
+  Exercise_271 test1(2, -1, 1, -1, 1, parts, 0, 1, 0);
+  test1.GeneratePDE();
+  test1.SolveEquation(false);
+  test1.GetResults(filename);
 
-    // parts = 6;
-    // filename = "5parts";
-    // Exercise_271 test2(2, -1, 1, -1, 1, parts, 0, 1, 0);
-    // test2.GeneratePDE();
-    // test2.SolveEquation();
-    // test2.GetResults(filename);
-
-    system("pause");
-    return 0;
+  system("pause");
+  return 0;
 }
