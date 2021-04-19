@@ -28,12 +28,21 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-  unsigned parts = 4;
-  string filename = "4parts";
-  Exercise_271 test1(2, -1, 1, -1, 1, parts, 0, 1, 0);
-  test1.GeneratePDE();
-  test1.SolveEquation(false);
-  test1.GetResults(filename);
+    // unsigned parts = 4;
+    // string filename = "4parts";
+    // bool output = false;
+    // Exercise_271 poisson(2, -1, 1, -1, 1, parts, 0, 1, 0);
+    // poisson.GeneratePDE();
+    // poisson.SolveEquation(output);
+    // poisson.GetResults(filename);
+
+    unsigned parts = 4;
+    string filename = "4parts_helmholtz";
+    bool output = false;
+    Exercise_272 helmholtz(1, 0, 1, 0, 1, parts, 0, 0);
+    // helmholtz.GeneratePDE();
+    // helmholtz.SolveEquation(output);
+    // helmholtz.GetResults(filename);
 
   system("pause");
   return 0;

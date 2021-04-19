@@ -22,10 +22,13 @@ public:
 
 //P82, 2.7.1, 线性元求解泊松方程-混合边界问题
 class Exercise_271;
+//P82, 2.7.2, 线性元求解Helmholtz方程-混合边界问题
+class Exercise_272;
 
 class Grid
 {
 friend class Exercise_271;
+friend class Exercise_272;
 
 public:
     Grid(double f_, double x1_, double x2_, double y1_, double y2_,unsigned xParts_);
@@ -89,5 +92,32 @@ private:
 
 };
 
+class Exercise_272 : public Grid
+{
+public:
+    Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_,unsigned xParts_,
+                 double u_e_, double u_dx_);
+    ~Exercise_272(){}
+    void GeneratePDE() override;
+
+private:
+    //第一边值条件
+    const double u_e;
+    //第二边值条件
+    const double u_dx;
+    // 设置节点编号
+    void SetNodesNumb() override;
+    // 设置节点值
+    void SetNodesData() override;
+    // 处理左上left-top
+    // void ProcessLT();
+    // // 处理左上left-middle
+    // void ProcessLM();
+    // // 处理左下left-bottom
+    // void ProcessLB();
+    // // 处理右边界
+    // void ProcessR();
+
+};
 
 #endif

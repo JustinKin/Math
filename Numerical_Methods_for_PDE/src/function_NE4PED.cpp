@@ -24,9 +24,9 @@ void Grid::ShowGridPara()
     fmt::print("    yParts : {}\n", yParts);
     fmt::print("     nodes : {}\n", nodes);
     fmt::print("outerNodes : {}\n", outerNodes.size());
-    //fmt::print("outerNodes No. : {}\n", outerNodes);
+    fmt::print("outerNodes No. : {}\n", outerNodes);
     fmt::print("innerNodes : {}\n", innerNodes.size());
-    //fmt::print("innerNodes No. : {}\n", innerNodes);
+    fmt::print("innerNodes No. : {}\n", innerNodes);
     fmt::print("   triArea : {}\n", triArea);
 }
 
@@ -351,3 +351,56 @@ void Exercise_271::GeneratePDE()
     // 处理右边界
     ProcessR();
 }
+
+
+// 初始化内外节点编号
+void Exercise_272::SetNodesNumb()
+{
+    unsigned outs = 2 * xParts + 1;
+    unsigned ins = (xParts + 1) * (xParts + 1) - outs;
+    outerNodes.resize(outs);
+    innerNodes.resize(ins);
+    outerNodes[0] = 0;
+    for (unsigned i = 1; i < xParts + 1; ++i)
+    {
+        unsigned no = i * (xParts + 1);
+        outerNodes[i] = i;
+        outerNodes[xParts + i] = no;
+    }
+    for (unsigned j = 0, k = 0; j < xParts + 1; ++j)
+    {
+        for (unsigned i = 1; i < xParts + 1; ++i)
+            innerNodes[k++] = i + (j + 1) * (xParts + 1);
+    }
+}
+
+// 初始化外节点初值
+void Exercise_272::SetNodesData()
+{
+    for (auto const &p : outerNodes)
+        nodesData[p].value = u_e;
+}
+
+Exercise_272::
+    Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_, unsigned xParts_,
+                 double u_e_, double u_dx_)
+    : Grid(f_, x1_, x2_, y1_, y2_, xParts_), u_e(u_e_), u_dx(u_dx_)
+{
+    // 网格剖分的参数
+    double len = (boundary_x.second - boundary_x.first) / xParts;
+    auto yParts = (boundary_y.second - boundary_y.first) / len;
+    nodes = (xParts + 1) * (yParts + 1);
+    triArea = 0.5 * len * len;
+    // 初始化内外节点编号
+    SetNodesNumb();
+    // 初始化外节点初值
+    SetNodesData();
+    // 显示网格参数
+    ShowGridPara();
+}
+
+void Exercise_272::GeneratePDE()
+{
+
+}
+
