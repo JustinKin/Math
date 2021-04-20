@@ -96,7 +96,7 @@ class Exercise_272 : public Grid
 {
 public:
     Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_,unsigned xParts_,
-                 double u_e_, double u_dx_, std::vector<double> k_);
+                 double u_e_, double u_dx_, double k_);
     ~Exercise_272(){}
     void GeneratePDE() override;
 
@@ -106,13 +106,15 @@ private:
     //第二边值条件
     const double u_dx;
     //k
-    const std::vector<double> k;
+    const double k;
     // 设置节点编号
     void SetNodesNumb() override;
     // 设置节点值
     void SetNodesData() override;
-    // 处理右边界
-    // void ProcessR();
+    // 处理左边
+    void ProcessL();
+    // 处理右边
+    void ProcessR();
 
 };
 

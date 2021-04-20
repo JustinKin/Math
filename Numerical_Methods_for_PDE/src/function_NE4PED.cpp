@@ -3,7 +3,9 @@
 #include <vector>
 #include <cmath>
 #include "D:/Lib/Eigen3/Eigen/Eigen"
-#include "D:/Lib/Eigen3/Eigen/LU"
+// #include "D:/Lib/Eigen3/Eigen/LU"
+// #include "D:/Lib/Eigen3/Eigen/Cholesky"
+#include "D:/Lib/Eigen3/Eigen/SVD"
 #include "D:/Lib/FMT/include/fmt/format.h"
 #include "D:/Lib/FMT/include/fmt/ranges.h"
 #include "D:/Lib/FMT/include/fmt/os.h"
@@ -48,9 +50,6 @@ Grid::Grid(double f_, double x1_, double x2_, double y1_, double y2_, unsigned x
             nodesData[k++].y = boundary_y.second - len * i;
         }
     }
-    unsigned scale = (xParts + 1) * (xParts + 1) - 2 * (xParts + 1);
-    A = Eigen::MatrixXd::Zero(scale, scale);
-    b = Eigen::MatrixXd::Zero(scale, 1);
 }
 
 std::vector<double> Grid::Get_abc(Point const &i, Point const &j, Point const &k)
@@ -66,7 +65,9 @@ void Grid::SolveEquation(bool out)
 {
     int rows = innerNodes.size();
     Eigen::MatrixXd u = Eigen::MatrixXd::Zero(rows, 1);
-    u = A.lu().solve(b);
+    // u = A.lu().solve(b);
+    // u = A.llt().solve(b);
+    u = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
     if(out)
     {
         cout << "\n"
@@ -93,6 +94,7 @@ void Grid::GetResults(std::string fileName) const
     // out.print("( {: f}, {: f} ) : {: f}\n", p.x, p.y, p.value);
     out.close();
     // 画图
+    cout << " for (int i = 0; i < nodesData.size();) "<<endl;
     std::vector<std::vector<double>> x, y, z;
     for (int i = 0; i < nodesData.size();)
     {
@@ -107,6 +109,7 @@ void Grid::GetResults(std::string fileName) const
         y.emplace_back(y_row);
         z.emplace_back(z_row);
     }
+    cout << " plt::plot_surface(x, y, z); "<<endl;
     plt::plot_surface(x, y, z);
     plt::show();
 }
@@ -143,6 +146,10 @@ Exercise_271::
                  double u_e_, double u_dx1_, double u_dx2_)
     : Grid(f_, x1_, x2_, y1_, y2_, xParts_), u_e(u_e_), u_dx(make_pair(u_dx1_, u_dx2_))
 {
+    unsigned scale = (xParts + 1) * (xParts + 1) - 2 * (xParts + 1);
+    A = Eigen::MatrixXd::Zero(scale, scale);
+    b = Eigen::MatrixXd::Zero(scale, 1);
+
     // 网格剖分的参数
     double len = (boundary_x.second - boundary_x.first) / xParts;
     auto yParts = (boundary_y.second - boundary_y.first) / len;
@@ -191,9 +198,9 @@ void Exercise_271::ProcessLM()
         //#3 1个三角形
         A(j, j + 1) = 0.25 / triArea * (v[2][1] + v[2][2]);
         //#4 2个三角形
-        A(j, j + 1) = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
+        A(j, j + xParts - 2) = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
         //#5 2个三角形
-        A(j, j + 1) = 0.25 / triArea * (v[1][1] * v[2][1] + v[1][2] * v[2][2]);
+        A(j, j + xParts - 1) = 0.25 / triArea * (v[1][1] * v[2][1] + v[1][2] * v[2][2]);
     }
 }
 
@@ -212,9 +219,9 @@ void Exercise_271::ProcessLB()
     //i = 4, 3个三角形
     A(row, row) = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] + v[0][2] * v[1][2] * v[2][2]);
     //i = 9, 2个三角形
-    A(row, row) = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
+    A(row, row + xParts - 2) = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
     //i = 10, 2个三角形
-    A(row, row) = 0.25 / triArea * (v[1][1] * v[2][1] + v[1][2] * v[2][2]);
+    A(row, row + xParts - 1) = 0.25 / triArea * (v[1][1] * v[2][1] + v[1][2] * v[2][2]);
 }
 
 void Exercise_271::ProcessR()
@@ -381,17 +388,131 @@ void Exercise_272::SetNodesData()
         nodesData[p].value = u_e;
 }
 
+// 处理左边
+void Exercise_272::ProcessL()
+{
+    const auto &p = nodesData;
+    vector<vector<double>> v(6);
+    const int top = xParts + 2; //点号 不是内点矩阵下标
+    v[0] = Get_abc(p[top], p[top - 1], p[top - 1 - xParts]);
+    v[1] = Get_abc(p[top], p[top - 1 - xParts], p[top - xParts]);
+    v[2] = Get_abc(p[top], p[top - xParts], p[top + 1]);
+    v[3] = Get_abc(p[top], p[top + 1], p[top + 1 + xParts]);
+    v[4] = Get_abc(p[top], p[top + 1 + xParts], p[top + xParts]);
+    v[5] = Get_abc(p[top], p[top + xParts], p[top - 1]);
 
-// 处理右边界
-// void Exercise_272::ProcessR();
+    double sum = 0.0;
+    // 0号点有3项
+    sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] * v[3][1] * v[4][1] * v[5][1] + v[0][2] * v[1][2] * v[2][2] * v[3][2] * v[4][2] * v[5][2]);
+    A(0,0) = sum - 1.0 / 12.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[2][1] * v[3][1] + v[2][2] * v[3][2]);
+    A(0,1) = sum - 1.0 / 6.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[4][1] * v[3][1] + v[4][2] * v[3][2]);
+    A(0,xParts) = sum - 1.0 / 6.0 * k * k * triArea;
 
+    // 中间点有5项
+    for(int j = 1; j < xParts - 1; ++j)
+    {
+        int middle = top + j;
+        v[0] = Get_abc(p[middle], p[middle - 1], p[middle - 1 - xParts]);
+        v[1] = Get_abc(p[middle], p[middle - 1 - xParts], p[middle - xParts]);
+        v[2] = Get_abc(p[middle], p[middle - xParts], p[middle + 1]);
+        v[3] = Get_abc(p[middle], p[middle + 1], p[middle + 1 + xParts]);
+        v[4] = Get_abc(p[middle], p[middle + 1 + xParts], p[middle + xParts]);
+        v[5] = Get_abc(p[middle], p[middle + xParts], p[middle - 1]);
+        sum = 0.25 / triArea * (v[0][1] * v[5][1] + v[0][2] * v[5][2]);
+        A(j, j - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] * v[3][1] * v[4][1] * v[5][1] + v[0][2] * v[1][2] * v[2][2] * v[3][2] * v[4][2] * v[5][2]);
+        A(j, j) = sum - 1.0 / 12.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[2][1] * v[3][1] + v[2][2] * v[3][2]);
+        A(j, j + 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[4][1] * v[5][1] + v[4][2] * v[5][2]);
+        A(j, j + xParts - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[4][1] * v[3][1] + v[4][2] * v[3][2]);
+        A(j, j + xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+    }
+
+    // 底下点有4项
+    int bottom = 2 * xParts + 1;
+    const int row = xParts - 1;
+    v[0] = Get_abc(p[bottom], p[bottom - 1], p[xParts]);
+    v[1] = Get_abc(p[bottom], p[bottom + xParts], p[bottom - 1]);
+    v[2] = Get_abc(p[bottom], p[bottom + xParts + 1], p[bottom + xParts]);
+    sum = 0.25 / triArea * (v[0][1] * v[1][1]  + v[0][2] * v[1][2]);
+    A(row, row - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1]  + v[0][2] * v[1][2] * v[2][2]);
+    A(row, row) = sum - 1.0 / 12.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[1][1] * v[2][1]  + v[1][2] * v[2][2]);
+    A(row, row + xParts - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[2][1]  + v[2][2]);
+    A(row, row + xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+}
+
+// 处理右边
+void Exercise_272::ProcessR()
+{
+    // 右上
+    const auto &p = nodesData;
+    vector<vector<double>> v(3);
+    int row = innerNodes.size() - xParts; // 矩阵行下标
+    const int top = nodes - xParts;           //点号 不是内点矩阵下标
+    const int bottom = nodes - 1;             //点号 不是内点矩阵下标
+    v[0] = Get_abc(p[top], p[top - 1], p[top - 1 - xParts]);
+    v[1] = Get_abc(p[top], p[top - 1 - xParts], p[top - xParts]);
+    v[2] = Get_abc(p[top], p[top - xParts], p[top + 1]);
+    double sum = 0.0;
+    // 4个点 4项
+    sum = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
+    A(row, row - xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[2][1] * v[1][1] + v[2][2] * v[1][2]);
+    A(row, row - xParts + 1) = sum - 1.0 / 6.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] + v[0][2] * v[1][2] * v[2][2]);
+    A(row, row) = sum - 1.0 / 12.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[2][1] + v[2][2]);
+    A(row, row + 1) = sum - 1.0 / 6.0 * k * k * triArea;
+    ++row;
+
+    // 中间点
+    int middle = top + 1;
+    for(int j = 1; j < xParts - 1; ++j)
+    {
+        v[0] = Get_abc(p[middle], p[middle - 1], p[middle - 1 - xParts]);
+        v[1] = Get_abc(p[middle], p[middle - 1 - xParts], p[middle - xParts]);
+        v[2] = Get_abc(p[middle], p[middle - xParts], p[middle + 1]);
+        // 5个点 5项
+        sum = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
+        A(row, row - xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[2][1] * v[1][1] + v[2][2] * v[1][2]);
+        A(row, row - xParts + 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] + v[0][2] * v[1][2] * v[2][2]);
+        A(row, row) = sum - 1.0 / 12.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[2][1] + v[2][2]);
+        A(row, row + 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[0][1] + v[0][2]);
+        A(row, row - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        ++row;
+        ++middle;
+    }
+
+    // 处理底边点
+    // 3个点 3项
+    v[0] = Get_abc(p[middle], p[middle - 1], p[middle - 1 - xParts]);
+    sum = 0.25 / triArea * (v[0][1] + v[0][2]);
+    A(row, row - xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[0][1] + v[0][2]);
+    A(row, row) = sum - 1.0 / 12.0 * k * k * triArea;
+    sum = 0.25 / triArea * (v[0][1] + v[0][2]);
+    A(row, row - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+}
 
 Exercise_272::
     Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_, unsigned xParts_,
-                 double u_e_, double u_dx_,std::vector<double> k_)
+                 double u_e_, double u_dx_,double k_)
     : Grid(f_, x1_, x2_, y1_, y2_, xParts_), u_e(u_e_), u_dx(u_dx_), k(k_)
 {
-    // 网格剖分的参数
+    unsigned scale = xParts * xParts;
+    A = Eigen::MatrixXd::Zero(scale, scale);
+    b = Eigen::MatrixXd::Zero(scale, 1);    // 网格剖分的参数
     double len = (boundary_x.second - boundary_x.first) / xParts;
     auto yParts = (boundary_y.second - boundary_y.first) / len;
     nodes = (xParts + 1) * (yParts + 1);
@@ -429,39 +550,85 @@ void Exercise_272::GeneratePDE()
         b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
         ++j;
     }
-    b(j, 0) = 1.0 / 3.0 * triArea * f;
+    b(innerNodes.size() - 1, 0) = 1.0 / 3.0 * triArea * f;
 
     // 方程左端
-    // 左侧内点
-    edgeRT = 0;
-    for(int col = 1, &j = edgeRT; col < cols; ++col)
+    // 处理左边
+    ProcessL();
+
+    // 处理中部
+    int row = xParts; // 矩阵行下标
+    for(int col = 2; col < xParts; ++col)
     {
         const auto &p = nodesData;
         vector<vector<double>> v(6);
+        // 处理顶上点
         const int top = 1 + col * (xParts + 1); //点号 不是内点矩阵下标
-        for(int row = 1, i = top; row < rows; ++row, ++i)
+        v[0] = Get_abc(p[top], p[top - 1], p[top - 1 - xParts]);
+        v[1] = Get_abc(p[top], p[top - 1 - xParts], p[top - xParts]);
+        v[2] = Get_abc(p[top], p[top - xParts], p[top + 1]);
+        v[3] = Get_abc(p[top], p[top + 1], p[top + 1 + xParts]);
+        v[4] = Get_abc(p[top], p[top + 1 + xParts], p[top + xParts]);
+        v[5] = Get_abc(p[top], p[top + xParts], p[top - 1]);
+        double sum = 0.0;
+        // 5个点 5项
+        sum = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
+        A(row, row - xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[2][1] * v[1][1] + v[2][2] * v[1][2]);
+        A(row, row - xParts + 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] * v[3][1] * v[4][1] * v[5][1] + v[0][2] * v[1][2] * v[2][2] * v[3][2] * v[4][2] * v[5][2]);
+        A(row, row) = sum - 1.0 / 12.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[2][1] * v[3][1] + v[2][2] * v[3][2]);
+        A(row, row + 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[4][1] * v[3][1] + v[4][2] * v[3][2]);
+        A(row, row + xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+        ++row;
+        // 处理中间点
+        const int bottom = (col + 1) * (xParts + 1) - 1; // 点号 不是内点矩阵下标
+        for (int j = top + 1; j < bottom; ++j) // j 是点号 不是内点矩阵下标
         {
-            v[0] = Get_abc(p[top], p[top - 1], p[top - 1 - xParts]);
-            v[1] = Get_abc(p[top], p[top - 1 - xParts], p[top - xParts]);
-            v[2] = Get_abc(p[top], p[top - xParts], p[top + 1]);
-            v[3] = Get_abc(p[top], p[top + 1], p[top + 1 + xParts]);
-            v[4] = Get_abc(p[top], p[top + 1 + xParts], p[top + xParts]);
-            v[5] = Get_abc(p[top], p[top + xParts], p[top - 1]);
-
-            A(j, row - edge1) = 0.25 / triArea * ();
-
-            // b(j, 0) = 1.0 / 3.0 * triArea * f * 6;
-            ++j;
+            v[0] = Get_abc(p[j], p[j - 1], p[j - 1 - xParts]);
+            v[1] = Get_abc(p[j], p[j - 1 - xParts], p[j - xParts]);
+            v[2] = Get_abc(p[j], p[j - xParts], p[j + 1]);
+            v[3] = Get_abc(p[j], p[j + 1], p[j + 1 + xParts]);
+            v[4] = Get_abc(p[j], p[j + 1 + xParts], p[j + xParts]);
+            v[5] = Get_abc(p[j], p[j + xParts], p[j - 1]);
+            // 7个点 7项
+            sum = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
+            A(row, row - xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+            sum = 0.25 / triArea * (v[2][1] * v[1][1] + v[2][2] * v[1][2]);
+            A(row, row - xParts + 1) = sum - 1.0 / 6.0 * k * k * triArea;
+            sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] * v[3][1] * v[4][1] * v[5][1] + v[0][2] * v[1][2] * v[2][2] * v[3][2] * v[4][2] * v[5][2]);
+            A(row, row) = sum - 1.0 / 12.0 * k * k * triArea;
+            sum = 0.25 / triArea * (v[2][1] * v[3][1] + v[2][2] * v[3][2]);
+            A(row, row + 1) = sum - 1.0 / 6.0 * k * k * triArea;
+            sum = 0.25 / triArea * (v[4][1] * v[3][1] + v[4][2] * v[3][2]);
+            A(row, row + xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+            sum = 0.25 / triArea * (v[4][1] * v[5][1] + v[4][2] * v[5][2]);
+            A(row, row + xParts - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+            sum = 0.25 / triArea * (v[0][1] * v[5][1] + v[0][2] * v[5][2]);
+            A(row, row - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+            ++row;
         }
-        // b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
-        ++j;
+        // 处理底边点
+        // 5个点 5项
+        v[0] = Get_abc(p[bottom], p[bottom - 1], p[bottom - 1 - xParts]);
+        v[1] = Get_abc(p[bottom], p[bottom + xParts], p[bottom - 1]);
+        v[2] = Get_abc(p[bottom], p[bottom + xParts + 1], p[bottom + xParts]);
+        sum = 0.25 / triArea * (v[0][1]  + v[0][2]);
+        A(row, row - xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[0][1] * v[1][1]  + v[0][2] * v[1][2]);
+        A(row, row - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1]  + v[0][2] * v[1][2] * v[2][2]);
+        A(row, row) = sum - 1.0 / 12.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[1][1] * v[2][1]  + v[1][2] * v[2][2]);
+        A(row, row + xParts - 1) = sum - 1.0 / 6.0 * k * k * triArea;
+        sum = 0.25 / triArea * (v[2][1]  + v[2][2]);
+        A(row, row + xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+        ++row;
     }
-    for(int row = 1, &j = edgeRT; row < rows; ++row)
-    {
-        // b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
-        ++j;
-    }
-    // b(j, 0) = 1.0 / 3.0 * triArea * f;
 
+    // 处理右边
+    ProcessR();
 }
 
