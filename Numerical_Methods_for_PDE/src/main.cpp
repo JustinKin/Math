@@ -22,6 +22,7 @@
 */
 #include <iostream>
 #include <string>
+#include <vector>
 #include "NE4PED.H"
 
 using namespace std;
@@ -36,10 +37,11 @@ int main(int argc, char **argv)
     // poisson.SolveEquation(output);
     // poisson.GetResults(filename);
 
-    unsigned parts = 4;
+    unsigned parts = 5;
     string filename = "4parts_helmholtz";
     bool output = false;
-    Exercise_272 helmholtz(1, 0, 1, 0, 1, parts, 0, 0);
+    vector<double> k{1, 5, 10, 15, 20};
+    Exercise_272 helmholtz(1, 0, 1, 0, 1, parts, 0, 0, k);
     // helmholtz.GeneratePDE();
     // helmholtz.SolveEquation(output);
     // helmholtz.GetResults(filename);

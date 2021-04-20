@@ -383,8 +383,8 @@ void Exercise_272::SetNodesData()
 
 Exercise_272::
     Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_, unsigned xParts_,
-                 double u_e_, double u_dx_)
-    : Grid(f_, x1_, x2_, y1_, y2_, xParts_), u_e(u_e_), u_dx(u_dx_)
+                 double u_e_, double u_dx_,std::vector<double> k_)
+    : Grid(f_, x1_, x2_, y1_, y2_, xParts_), u_e(u_e_), u_dx(u_dx_), k(k_)
 {
     // 网格剖分的参数
     double len = (boundary_x.second - boundary_x.first) / xParts;
@@ -401,6 +401,18 @@ Exercise_272::
 
 void Exercise_272::GeneratePDE()
 {
+    const int scale = innerNodes.size();
+    const int edge1 = xParts - 1;
+    const int edge2 = scale - edge1;
+    // 方程右端
+    for (int j = 0; j < edge1; ++j)
+        b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
+    for (int j = edge1; j < edge2; ++j)
+        b(j, 0) = 1.0 / 3.0 * triArea * f * 6;
+    for (int j = edge2; j < scale; ++j)
+        b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
+    //todo edge no
 
+    // 方程左端
 }
 
