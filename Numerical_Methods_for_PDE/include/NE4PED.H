@@ -111,13 +111,7 @@ private:
     void SetNodesNumb() override;
     // 设置节点值
     void SetNodesData() override;
-    // 处理左上left-top
-    // void ProcessLT();
-    // // 处理左上left-middle
-    // void ProcessLM();
-    // // 处理左下left-bottom
-    // void ProcessLB();
-    // // 处理右边界
+    // 处理右边界
     // void ProcessR();
 
 };

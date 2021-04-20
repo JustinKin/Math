@@ -381,6 +381,11 @@ void Exercise_272::SetNodesData()
         nodesData[p].value = u_e;
 }
 
+
+// 处理右边界
+// void Exercise_272::ProcessR();
+
+
 Exercise_272::
     Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_, unsigned xParts_,
                  double u_e_, double u_dx_,std::vector<double> k_)
@@ -404,15 +409,59 @@ void Exercise_272::GeneratePDE()
     const int scale = innerNodes.size();
     const int edge1 = xParts - 1;
     const int edge2 = scale - edge1;
+
+    const int &rows = xParts;  //4
+    const int &cols = xParts; //4
     // 方程右端
-    for (int j = 0; j < edge1; ++j)
+    int edgeRT = 0;
+    for(int col = 1, &j = edgeRT; col < cols; ++col)
+    {
+        for(int row = 1; row < rows; ++row)
+        {
+            b(j, 0) = 1.0 / 3.0 * triArea * f * 6;
+            ++j;
+        }
         b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
-    for (int j = edge1; j < edge2; ++j)
-        b(j, 0) = 1.0 / 3.0 * triArea * f * 6;
-    for (int j = edge2; j < scale; ++j)
+        ++j;
+    }
+    for(int row = 1, &j = edgeRT; row < rows; ++row)
+    {
         b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
-    //todo edge no
+        ++j;
+    }
+    b(j, 0) = 1.0 / 3.0 * triArea * f;
 
     // 方程左端
+    // 左侧内点
+    edgeRT = 0;
+    for(int col = 1, &j = edgeRT; col < cols; ++col)
+    {
+        const auto &p = nodesData;
+        vector<vector<double>> v(6);
+        const int top = 1 + col * (xParts + 1); //点号 不是内点矩阵下标
+        for(int row = 1, i = top; row < rows; ++row, ++i)
+        {
+            v[0] = Get_abc(p[top], p[top - 1], p[top - 1 - xParts]);
+            v[1] = Get_abc(p[top], p[top - 1 - xParts], p[top - xParts]);
+            v[2] = Get_abc(p[top], p[top - xParts], p[top + 1]);
+            v[3] = Get_abc(p[top], p[top + 1], p[top + 1 + xParts]);
+            v[4] = Get_abc(p[top], p[top + 1 + xParts], p[top + xParts]);
+            v[5] = Get_abc(p[top], p[top + xParts], p[top - 1]);
+
+            A(j, row - edge1) = 0.25 / triArea * ();
+
+            // b(j, 0) = 1.0 / 3.0 * triArea * f * 6;
+            ++j;
+        }
+        // b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
+        ++j;
+    }
+    for(int row = 1, &j = edgeRT; row < rows; ++row)
+    {
+        // b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
+        ++j;
+    }
+    // b(j, 0) = 1.0 / 3.0 * triArea * f;
+
 }
 
