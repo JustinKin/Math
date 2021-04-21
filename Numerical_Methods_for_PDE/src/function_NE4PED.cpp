@@ -2,9 +2,6 @@
 #include <string>
 #include <vector>
 #include <cmath>
-#include "D:/Lib/Eigen3/Eigen/Eigen"
-// #include "D:/Lib/Eigen3/Eigen/LU"
-// #include "D:/Lib/Eigen3/Eigen/Cholesky"
 #include "D:/Lib/Eigen3/Eigen/SVD"
 #include "D:/Lib/FMT/include/fmt/format.h"
 #include "D:/Lib/FMT/include/fmt/ranges.h"
@@ -26,9 +23,9 @@ void Grid::ShowGridPara()
     fmt::print("    yParts : {}\n", yParts);
     fmt::print("     nodes : {}\n", nodes);
     fmt::print("outerNodes : {}\n", outerNodes.size());
-    fmt::print("outerNodes No. : {}\n", outerNodes);
+    // fmt::print("outerNodes No. : {}\n", outerNodes);
     fmt::print("innerNodes : {}\n", innerNodes.size());
-    fmt::print("innerNodes No. : {}\n", innerNodes);
+    // fmt::print("innerNodes No. : {}\n", innerNodes);
     fmt::print("   triArea : {}\n", triArea);
 }
 
@@ -65,8 +62,6 @@ void Grid::SolveEquation(bool out)
 {
     int rows = innerNodes.size();
     Eigen::MatrixXd u = Eigen::MatrixXd::Zero(rows, 1);
-    // u = A.lu().solve(b);
-    // u = A.llt().solve(b);
     u = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
     if(out)
     {
@@ -94,7 +89,6 @@ void Grid::GetResults(std::string fileName) const
     // out.print("( {: f}, {: f} ) : {: f}\n", p.x, p.y, p.value);
     out.close();
     // 画图
-    cout << " for (int i = 0; i < nodesData.size();) "<<endl;
     std::vector<std::vector<double>> x, y, z;
     for (int i = 0; i < nodesData.size();)
     {
@@ -109,11 +103,11 @@ void Grid::GetResults(std::string fileName) const
         y.emplace_back(y_row);
         z.emplace_back(z_row);
     }
-    cout << " plt::plot_surface(x, y, z); "<<endl;
     plt::plot_surface(x, y, z);
     plt::show();
 }
 
+/*
 // 初始化内外节点编号
 void Exercise_271::SetNodesNumb()
 {
@@ -358,7 +352,7 @@ void Exercise_271::GeneratePDE()
     // 处理右边界
     ProcessR();
 }
-
+ */
 
 // 初始化内外节点编号
 void Exercise_272::SetNodesNumb()
@@ -507,7 +501,7 @@ void Exercise_272::ProcessR()
 
 Exercise_272::
     Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_, unsigned xParts_,
-                 double u_e_, double u_dx_,double k_)
+                 double u_e_, double u_dx_,int k_)
     : Grid(f_, x1_, x2_, y1_, y2_, xParts_), u_e(u_e_), u_dx(u_dx_), k(k_)
 {
     unsigned scale = xParts * xParts;

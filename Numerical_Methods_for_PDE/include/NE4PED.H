@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "D:/Lib/Eigen3/Eigen/Eigen"
+#include "D:/Lib/Eigen3/Eigen/SVD"
 
 class Point
 {
@@ -13,12 +13,11 @@ public:
     double y;
     double value;
     Point() : x(0), y(0), value(0) {}
-    ~Point(){}
+    ~Point() {}
     Point(double x_, double y_) : x(x_), y(y_), value(0) {}
     Point(double x_, double y_, double value_) : x(x_), y(y_), value(value_) {}
-    Point(const Point& p) : x(p.x), y(p.y), value(p.value) {}
+    Point(const Point &p) : x(p.x), y(p.y), value(p.value) {}
 };
-
 
 //P82, 2.7.1, 线性元求解泊松方程-混合边界问题
 class Exercise_271;
@@ -27,12 +26,12 @@ class Exercise_272;
 
 class Grid
 {
-friend class Exercise_271;
-friend class Exercise_272;
+    friend class Exercise_271;
+    friend class Exercise_272;
 
 public:
-    Grid(double f_, double x1_, double x2_, double y1_, double y2_,unsigned xParts_);
-    ~Grid(){}
+    Grid(double f_, double x1_, double x2_, double y1_, double y2_, unsigned xParts_);
+    ~Grid() {}
     std::vector<double> Get_abc(Point const &i_, Point const &j_, Point const &k_);
     // 形成有限元方程
     virtual void GeneratePDE() = 0;
@@ -63,13 +62,12 @@ private:
     void ShowGridPara();
 };
 
-
 class Exercise_271 : public Grid
 {
 public:
-    Exercise_271(double f_, double x1_, double x2_, double y1_, double y2_,unsigned xParts_,
+    Exercise_271(double f_, double x1_, double x2_, double y1_, double y2_, unsigned xParts_,
                  double u_e_, double u_dx1_, double u_dx2_);
-    ~Exercise_271(){}
+    ~Exercise_271() {}
     void GeneratePDE() override;
 
 private:
@@ -89,15 +87,14 @@ private:
     void ProcessLB();
     // 处理右边界
     void ProcessR();
-
 };
 
 class Exercise_272 : public Grid
 {
 public:
-    Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_,unsigned xParts_,
-                 double u_e_, double u_dx_, double k_);
-    ~Exercise_272(){}
+    Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_, unsigned xParts_,
+                 double u_e_, double u_dx_, int k_);
+    ~Exercise_272() {}
     void GeneratePDE() override;
 
 private:
@@ -106,7 +103,7 @@ private:
     //第二边值条件
     const double u_dx;
     //k
-    const double k;
+    const int k;
     // 设置节点编号
     void SetNodesNumb() override;
     // 设置节点值
@@ -115,7 +112,6 @@ private:
     void ProcessL();
     // 处理右边
     void ProcessR();
-
 };
 
 #endif

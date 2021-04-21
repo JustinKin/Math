@@ -29,8 +29,8 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    // unsigned parts = 4;
-    // string filename = "4parts";
+    // unsigned parts = 6;
+    // string filename = "6parts";
     // bool output = false;
     // Exercise_271 poisson(2, -1, 1, -1, 1, parts, 0, 1, 0);
     // poisson.GeneratePDE();
@@ -39,12 +39,10 @@ int main(int argc, char **argv)
 
     unsigned parts = 4;
     string filename = "4parts_helmholtz";
-    bool output = true;
-    vector<double> k{1, 5, 10, 15, 20};
-    int a;
+    bool output = false;
+    vector<int> k{1, 5, 10, 15, 20};
     for(int i = 0; i < k.size(); ++i)
     {
-      cin >> a;
       Exercise_272 helmholtz(1, 0, 1, 0, 1, parts, 0, 0, k[i]);
       filename += ("_" + to_string(k[i]));
       helmholtz.GeneratePDE();
