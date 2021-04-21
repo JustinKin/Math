@@ -63,14 +63,14 @@ void Grid::SolveEquation(bool out)
     int rows = innerNodes.size();
     Eigen::MatrixXd u = Eigen::MatrixXd::Zero(rows, 1);
     u = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-    if(out)
+    if (out)
     {
         cout << "\n"
-            << A << endl;
+             << A << endl;
         cout << "\n"
-            << b << endl;
+             << b << endl;
         cout << "\n"
-            << u << endl;
+             << u << endl;
     }
 
     for (unsigned i = 0; i < innerNodes.size(); ++i)
@@ -107,7 +107,7 @@ void Grid::GetResults(std::string fileName) const
     plt::show();
 }
 
-/*
+
 // 初始化内外节点编号
 void Exercise_271::SetNodesNumb()
 {
@@ -352,7 +352,7 @@ void Exercise_271::GeneratePDE()
     // 处理右边界
     ProcessR();
 }
- */
+
 
 // 初始化内外节点编号
 void Exercise_272::SetNodesNumb()
@@ -398,14 +398,14 @@ void Exercise_272::ProcessL()
     double sum = 0.0;
     // 0号点有3项
     sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] * v[3][1] * v[4][1] * v[5][1] + v[0][2] * v[1][2] * v[2][2] * v[3][2] * v[4][2] * v[5][2]);
-    A(0,0) = sum - 1.0 / 12.0 * k * k * triArea;
+    A(0, 0) = sum - 1.0 / 12.0 * k * k * triArea;
     sum = 0.25 / triArea * (v[2][1] * v[3][1] + v[2][2] * v[3][2]);
-    A(0,1) = sum - 1.0 / 6.0 * k * k * triArea;
+    A(0, 1) = sum - 1.0 / 6.0 * k * k * triArea;
     sum = 0.25 / triArea * (v[4][1] * v[3][1] + v[4][2] * v[3][2]);
-    A(0,xParts) = sum - 1.0 / 6.0 * k * k * triArea;
+    A(0, xParts) = sum - 1.0 / 6.0 * k * k * triArea;
 
     // 中间点有5项
-    for(int j = 1; j < xParts - 1; ++j)
+    for (int j = 1; j < xParts - 1; ++j)
     {
         int middle = top + j;
         v[0] = Get_abc(p[middle], p[middle - 1], p[middle - 1 - xParts]);
@@ -432,13 +432,13 @@ void Exercise_272::ProcessL()
     v[0] = Get_abc(p[bottom], p[bottom - 1], p[xParts]);
     v[1] = Get_abc(p[bottom], p[bottom + xParts], p[bottom - 1]);
     v[2] = Get_abc(p[bottom], p[bottom + xParts + 1], p[bottom + xParts]);
-    sum = 0.25 / triArea * (v[0][1] * v[1][1]  + v[0][2] * v[1][2]);
+    sum = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
     A(row, row - 1) = sum - 1.0 / 6.0 * k * k * triArea;
-    sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1]  + v[0][2] * v[1][2] * v[2][2]);
+    sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] + v[0][2] * v[1][2] * v[2][2]);
     A(row, row) = sum - 1.0 / 12.0 * k * k * triArea;
-    sum = 0.25 / triArea * (v[1][1] * v[2][1]  + v[1][2] * v[2][2]);
+    sum = 0.25 / triArea * (v[1][1] * v[2][1] + v[1][2] * v[2][2]);
     A(row, row + xParts - 1) = sum - 1.0 / 6.0 * k * k * triArea;
-    sum = 0.25 / triArea * (v[2][1]  + v[2][2]);
+    sum = 0.25 / triArea * (v[2][1] + v[2][2]);
     A(row, row + xParts) = sum - 1.0 / 6.0 * k * k * triArea;
 }
 
@@ -449,8 +449,8 @@ void Exercise_272::ProcessR()
     const auto &p = nodesData;
     vector<vector<double>> v(3);
     int row = innerNodes.size() - xParts; // 矩阵行下标
-    const int top = nodes - xParts;           //点号 不是内点矩阵下标
-    const int bottom = nodes - 1;             //点号 不是内点矩阵下标
+    const int top = nodes - xParts;       //点号 不是内点矩阵下标
+    const int bottom = nodes - 1;         //点号 不是内点矩阵下标
     v[0] = Get_abc(p[top], p[top - 1], p[top - 1 - xParts]);
     v[1] = Get_abc(p[top], p[top - 1 - xParts], p[top - xParts]);
     v[2] = Get_abc(p[top], p[top - xParts], p[top + 1]);
@@ -468,7 +468,7 @@ void Exercise_272::ProcessR()
 
     // 中间点
     int middle = top + 1;
-    for(int j = 1; j < xParts - 1; ++j)
+    for (int j = 1; j < xParts - 1; ++j)
     {
         v[0] = Get_abc(p[middle], p[middle - 1], p[middle - 1 - xParts]);
         v[1] = Get_abc(p[middle], p[middle - 1 - xParts], p[middle - xParts]);
@@ -501,12 +501,12 @@ void Exercise_272::ProcessR()
 
 Exercise_272::
     Exercise_272(double f_, double x1_, double x2_, double y1_, double y2_, unsigned xParts_,
-                 double u_e_, double u_dx_,int k_)
+                 double u_e_, double u_dx_, int k_)
     : Grid(f_, x1_, x2_, y1_, y2_, xParts_), u_e(u_e_), u_dx(u_dx_), k(k_)
 {
     unsigned scale = xParts * xParts;
     A = Eigen::MatrixXd::Zero(scale, scale);
-    b = Eigen::MatrixXd::Zero(scale, 1);    // 网格剖分的参数
+    b = Eigen::MatrixXd::Zero(scale, 1); // 网格剖分的参数
     double len = (boundary_x.second - boundary_x.first) / xParts;
     auto yParts = (boundary_y.second - boundary_y.first) / len;
     nodes = (xParts + 1) * (yParts + 1);
@@ -525,13 +525,13 @@ void Exercise_272::GeneratePDE()
     const int edge1 = xParts - 1;
     const int edge2 = scale - edge1;
 
-    const int &rows = xParts;  //4
+    const int &rows = xParts; //4
     const int &cols = xParts; //4
     // 方程右端
     int edgeRT = 0;
-    for(int col = 1, &j = edgeRT; col < cols; ++col)
+    for (int col = 1, &j = edgeRT; col < cols; ++col)
     {
-        for(int row = 1; row < rows; ++row)
+        for (int row = 1; row < rows; ++row)
         {
             b(j, 0) = 1.0 / 3.0 * triArea * f * 6;
             ++j;
@@ -539,7 +539,7 @@ void Exercise_272::GeneratePDE()
         b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
         ++j;
     }
-    for(int row = 1, &j = edgeRT; row < rows; ++row)
+    for (int row = 1, &j = edgeRT; row < rows; ++row)
     {
         b(j, 0) = 1.0 / 3.0 * triArea * f * 3;
         ++j;
@@ -552,7 +552,7 @@ void Exercise_272::GeneratePDE()
 
     // 处理中部
     int row = xParts; // 矩阵行下标
-    for(int col = 2; col < xParts; ++col)
+    for (int col = 2; col < xParts; ++col)
     {
         const auto &p = nodesData;
         vector<vector<double>> v(6);
@@ -579,7 +579,7 @@ void Exercise_272::GeneratePDE()
         ++row;
         // 处理中间点
         const int bottom = (col + 1) * (xParts + 1) - 1; // 点号 不是内点矩阵下标
-        for (int j = top + 1; j < bottom; ++j) // j 是点号 不是内点矩阵下标
+        for (int j = top + 1; j < bottom; ++j)           // j 是点号 不是内点矩阵下标
         {
             v[0] = Get_abc(p[j], p[j - 1], p[j - 1 - xParts]);
             v[1] = Get_abc(p[j], p[j - 1 - xParts], p[j - xParts]);
@@ -609,15 +609,15 @@ void Exercise_272::GeneratePDE()
         v[0] = Get_abc(p[bottom], p[bottom - 1], p[bottom - 1 - xParts]);
         v[1] = Get_abc(p[bottom], p[bottom + xParts], p[bottom - 1]);
         v[2] = Get_abc(p[bottom], p[bottom + xParts + 1], p[bottom + xParts]);
-        sum = 0.25 / triArea * (v[0][1]  + v[0][2]);
+        sum = 0.25 / triArea * (v[0][1] + v[0][2]);
         A(row, row - xParts) = sum - 1.0 / 6.0 * k * k * triArea;
-        sum = 0.25 / triArea * (v[0][1] * v[1][1]  + v[0][2] * v[1][2]);
+        sum = 0.25 / triArea * (v[0][1] * v[1][1] + v[0][2] * v[1][2]);
         A(row, row - 1) = sum - 1.0 / 6.0 * k * k * triArea;
-        sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1]  + v[0][2] * v[1][2] * v[2][2]);
+        sum = 0.25 / triArea * (v[0][1] * v[1][1] * v[2][1] + v[0][2] * v[1][2] * v[2][2]);
         A(row, row) = sum - 1.0 / 12.0 * k * k * triArea;
-        sum = 0.25 / triArea * (v[1][1] * v[2][1]  + v[1][2] * v[2][2]);
+        sum = 0.25 / triArea * (v[1][1] * v[2][1] + v[1][2] * v[2][2]);
         A(row, row + xParts - 1) = sum - 1.0 / 6.0 * k * k * triArea;
-        sum = 0.25 / triArea * (v[2][1]  + v[2][2]);
+        sum = 0.25 / triArea * (v[2][1] + v[2][2]);
         A(row, row + xParts) = sum - 1.0 / 6.0 * k * k * triArea;
         ++row;
     }
@@ -625,4 +625,3 @@ void Exercise_272::GeneratePDE()
     // 处理右边
     ProcessR();
 }
-
